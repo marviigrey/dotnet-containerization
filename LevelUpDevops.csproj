@@ -1,9 +1,29 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
-
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-  </PropertyGroup>
-
-</Project>
+#8 extracting sha256:fc9acfdaba2626291b3492be7fb11200f1cebd18baf5c0ca43bc9dd071632085 0.3s done
+#8 DONE 6.1s
+#9 [build 2/8] WORKDIR /src
+#9 DONE 0.0s
+#10 [build 3/8] COPY LevelUpDevOps.csproj .
+#10 DONE 0.0s
+#11 [build 4/8] RUN dotnet restore
+#11 0.740   Determining projects to restore...
+#11 1.110   Restored /src/LevelUpDevOps.csproj (in 78 ms).
+#11 DONE 1.1s
+#12 [build 5/8] COPY . .
+#12 DONE 0.0s
+#13 [build 6/8] RUN dotnet build -c Release
+#13 0.271 MSBUILD : error MSB1011: Specify which project or solution file to use because this folder contains more than one project or solution file.
+#13 ERROR: process "/bin/sh -c dotnet build -c Release" did not complete successfully: exit code: 1
+------
+ > [build 6/8] RUN dotnet build -c Release:
+0.271 MSBUILD : error MSB1011: Specify which project or solution file to use because this folder contains more than one project or solution file.
+------
+Dockerfile:8
+--------------------
+   6 |     RUN dotnet restore
+   7 |     COPY . .
+   8 | >>> RUN dotnet build -c Release
+   9 |     RUN dotnet test
+  10 |     RUN dotnet publish -c Release -o /dist
+--------------------
+ERROR: failed to build: failed to solve: process "/bin/sh -c dotnet build -c Release" did not complete successfully: exit code: 1
+Error: Process completed with exit code 1.
