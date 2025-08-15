@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: levelupdevops
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: levelupdevops
+  template:
+    metadata:
+      labels:
+        app: levelupdevops
+        version: IMAGE_LABEL
+    spec:
+      containers:
+      - name: levelupdevops
+        image: ACR_URL/levelupdevops:IMAGE_LABEL
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+          requests:
+            memory: "64Mi"
+            cpu: "250m"
+        ports:
+        - containerPort: 5000
+        env:
+        - name: ASPNETCORE_ENVIRONMENT
+          value: "Production"
+        # TODO: move this to a secret
+        - name: ConnectionStrings__MyDB
+          value: "Server=AzureSqlDatabase;Database=..."
