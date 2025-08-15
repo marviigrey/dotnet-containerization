@@ -15,7 +15,9 @@ jobs:
           username: ${{ vars.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
-      #build and push image to docker
+  build:
+      runs-on: self-hosted
+      steps:    #build and push image to docker
       - name: checkout repository
         uses: actions/checkout@v4
 
@@ -61,3 +63,10 @@ jobs:
         if: always()
         with:
           sarif_file: 'trivy-results.sarif'
+
+      - name: deploy to k8s
+        run: |
+            kubectl apply -f manifests/
+      
+  
+      
