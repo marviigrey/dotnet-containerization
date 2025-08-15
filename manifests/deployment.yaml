@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: levelupdevops
+  name: dotnet-app
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: levelupdevops
+      app: dotnet-app
   template:
     metadata:
       labels:
-        app: levelupdevops
-        version: IMAGE_LABEL
+        app: dotnet-app
+    
     spec:
       containers:
       - name: levelupdevops
-        image: ACR_URL/levelupdevops:IMAGE_LABEL
+        image: marviigrey/dotnet-app
         resources:
           limits:
             memory: "128Mi"
