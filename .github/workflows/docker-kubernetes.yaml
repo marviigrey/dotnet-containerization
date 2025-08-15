@@ -20,7 +20,7 @@ jobs:
       - name: docker build
         uses: docker/build-push-action@v6
         with:
-         context: /home/ubuntu/dotnet-containerization/Dockerfile
+         context: Dockerfile
          push: true
          tags: ${{ vars.DOCKERHUB_USERNAME }}/dotnet-app:${{github.sha}}
         
