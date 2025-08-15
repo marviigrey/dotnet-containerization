@@ -1,4 +1,4 @@
-namespace LevelUpDevOps.Models;
+namespace LevelUpDevops.Models;
 
 public class ErrorViewModel
 {

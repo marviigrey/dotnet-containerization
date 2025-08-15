@@ -1,24 +1,25 @@
-# build "server" image
-FROM mcr.microsoft.com/dotnet/sdk:9.0-alpine AS build
+FROM mcr.microsoft.com/dotnet/sdk:5.0-alpine as build
 
 WORKDIR /src
-
-COPY LevelUpDevOps.slnx .
 COPY LevelUpDevOps.csproj .
-RUN dotnet restore LevelUpDevOps.slnx
+
+RUN dotnet restore
 COPY . .
-RUN dotnet build -c Release LevelUpDevOps.slnx
-RUN dotnet test -c Release LevelUpDevOps.slnx
-RUN dotnet publish -c Release -o /dist LevelUpDevOps.csproj
+RUN dotnet build -c Release
+RUN dotnet test
+RUN dotnet publish -c Release /dist
 
-# production runtime "server" image
-FROM mcr.microsoft.com/dotnet/aspnet:9.0-alpine
+FROM mcr.microsoft.com/dotnet/aspnet:5.0-alpine
 
-ENV ASPNETCORE_URLS=http://+:5000
-EXPOSE 5000
-ENV ASPNETCORE_ENVIRONMENT=Production
-ENV ConnectionStrings__MyDB=""
+WORKDIR /dist
 
-WORKDIR /app
+ENV ASPNETCORE_ENVIRONMENT Production
+ENV ASPNETCORE_URLS http://+80
+
+EXPOSE 80
+
 COPY --from=build /dist .
+
 CMD ["dotnet", "LevelUpDevOps.dll"]
+
+
