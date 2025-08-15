@@ -5,45 +5,59 @@ on:
     branches: main
 
 jobs:
-
-
   #login to docker
   login:
     runs-on: ubuntu-latest
     steps:
-      
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ vars.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
-#build and push image to docker.
+      #build and push image to docker
       - name: checkout repository
         uses: actions/checkout@v4
-  
 
       - name: docker build
         run: |
-          docker build --tag ${{ vars.DOCKERHUB_USERNAME }}/dotnet-app:${{github.sha}} . 
+          docker build --tag ${{ vars.DOCKERHUB_USERNAME }}/dotnet-app:${{github.sha}} .
+
       - name: run trivy scan
         uses: aquasecurity/trivy-action@0.28.0
         with:
           image-ref: '${{ vars.DOCKERHUB_USERNAME }}/dotnet-app:${{github.sha}}'
-          format: 'table'
-          exit-code: '1'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          exit-code: '0'  # Don't fail the build, just report
           ignore-unfixed: true
           vuln-type: 'os,library'
           severity: 'CRITICAL,HIGH'
 
-    
-        
-        
+      - name: run trivy scan (table format)
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: '${{ vars.DOCKERHUB_USERNAME }}/dotnet-app:${{github.sha}}'
+          format: 'table'
+          output: 'trivy-results.txt'
+          exit-code: '1'  # This will still fail if vulnerabilities found
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
 
-        
+          #Upload even if previous steps failed
+      - name: Upload Trivy scan results
+        uses: actions/upload-artifact@v4
+        if: always()  
+        with:
+          name: trivy-scan-results
+          path: |
+            trivy-results.sarif
+            trivy-results.txt
+          retention-days: 30
 
-
-
-  
-
-  
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'
